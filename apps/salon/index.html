@@ -1,0 +1,1044 @@
+<!doctype html>
+<html lang="en">
+<head>
+<title>Debbie's Chair</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#6b2d5c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Debbie's Chair">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap">
+<style>
+/* Layout: one phone-width column (sticky header, scrolling day, fixed tab bar); centers at 760px on desktop.
+   Palette: porcelain neutral with a mauve bias, deep plum for actions, copper reserved for color services. */
+:root{
+  --bg:#f7f3f5; --surface:#ffffff; --surface-2:#f2eaef; --ink:#2b1d27; --muted:#76646f; --line:#e7dce2;
+  --plum:#6b2d5c; --plum-ink:#ffffff; --plum-soft:#f2e3ed; --copper:#a85e33; --copper-soft:#f6e7dd;
+  --good:#2f7d4f; --good-soft:#e2f2e8; --warn:#8a5d00; --warn-soft:#fbf0d4; --bad:#b0373a; --bad-soft:#f9e2e2;
+  --cat-cut:var(--plum); --cat-color:var(--copper); --cat-style:#4f6f8f; --cat-consult:#8c8088;
+  --shadow:0 1px 2px rgb(43 29 39 / .05), 0 6px 20px rgb(43 29 39 / .07);
+  --display:"Instrument Serif", Georgia, "Times New Roman", serif;
+  --body:"Figtree", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --r:16px;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#191117; --surface:#241921; --surface-2:#2e212a; --ink:#f4eaf0; --muted:#b5a1ad; --line:#3a2c35;
+    --plum:#dca0c9; --plum-ink:#1d1219; --plum-soft:#3c2535; --copper:#e3a77f; --copper-soft:#3a2a20;
+    --good:#82d1a0; --good-soft:#1d3127; --warn:#e8c45e; --warn-soft:#382e16; --bad:#f29090; --bad-soft:#3d2121;
+    --cat-style:#93b4d4; --cat-consult:#a99ba4;
+    --shadow:0 1px 0 rgb(255 255 255 / .03);
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#191117; --surface:#241921; --surface-2:#2e212a; --ink:#f4eaf0; --muted:#b5a1ad; --line:#3a2c35;
+  --plum:#dca0c9; --plum-ink:#1d1219; --plum-soft:#3c2535; --copper:#e3a77f; --copper-soft:#3a2a20;
+  --good:#82d1a0; --good-soft:#1d3127; --warn:#e8c45e; --warn-soft:#382e16; --bad:#f29090; --bad-soft:#3d2121;
+  --cat-style:#93b4d4; --cat-consult:#a99ba4;
+  --shadow:0 1px 0 rgb(255 255 255 / .03);
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font:16px/1.45 var(--body); -webkit-font-smoothing:antialiased; -webkit-tap-highlight-color:transparent}
+button,input,select,textarea{font:inherit; color:inherit}
+button{cursor:pointer}
+a{color:var(--plum)}
+:focus-visible{outline:3px solid var(--plum); outline-offset:2px; border-radius:8px}
+.num{font-variant-numeric:tabular-nums}
+
+.app{max-width:760px; margin:0 auto; padding-inline:16px; padding-block:0 calc(110px + env(safe-area-inset-bottom, 0px))}
+.top{position:sticky; top:env(safe-area-inset-top, 0px); z-index:5; background:var(--bg); display:flex; align-items:center; justify-content:space-between; gap:12px; padding-block:14px 10px}
+.brand{font-family:var(--display); font-size:1.55rem; line-height:1; letter-spacing:.005em}
+.brand em{color:var(--plum)}
+.top-date{color:var(--muted); font-size:.85rem; text-align:right}
+
+h1,h2,h3{text-wrap:balance; margin:0}
+h1{font-family:var(--display); font-weight:400; font-size:clamp(2.1rem, 7vw, 2.8rem); line-height:1.02; letter-spacing:-.01em}
+h2{font-size:1.02rem; font-weight:700}
+.eyebrow{font-size:.74rem; font-weight:700; letter-spacing:.09em; text-transform:uppercase; color:var(--muted); margin:0}
+.sub{color:var(--muted); margin:.35rem 0 0}
+.view{display:flex; flex-direction:column; gap:22px; padding-top:6px}
+.section{display:flex; flex-direction:column; gap:10px}
+.section-head{display:flex; align-items:baseline; justify-content:space-between; gap:12px}
+.link{background:none; border:0; padding:6px 2px; color:var(--plum); font-weight:600; font-size:.92rem}
+.empty{color:var(--muted); background:var(--surface); border:1px dashed var(--line); border-radius:var(--r); padding:18px; text-align:center}
+
+/* buttons */
+.btn{display:inline-flex; align-items:center; justify-content:center; gap:8px; min-height:46px; padding:0 18px; border-radius:999px; border:1px solid var(--line); background:var(--surface); font-weight:600; text-decoration:none; color:var(--ink); white-space:nowrap}
+.btn.primary{background:var(--plum); border-color:var(--plum); color:var(--plum-ink)}
+.btn.soft{background:var(--plum-soft); border-color:transparent; color:var(--plum)}
+.btn.danger{color:var(--bad); border-color:var(--bad-soft); background:var(--bad-soft)}
+.btn.sm{min-height:38px; padding:0 14px; font-size:.9rem}
+.btn svg{width:18px; height:18px; flex:none}
+.btn-row{display:flex; flex-wrap:wrap; gap:8px}
+.btn-row.fill > *{flex:1 1 0}
+
+/* next-up card: the one strong object on the dashboard */
+.next{background:var(--plum); color:var(--plum-ink); border-radius:22px; padding:18px; display:flex; flex-direction:column; gap:12px}
+.next .eyebrow{color:inherit; opacity:.75}
+.next-main{display:flex; justify-content:space-between; align-items:flex-end; gap:12px; flex-wrap:wrap}
+.next-name{font-family:var(--display); font-size:2rem; line-height:1}
+.next-meta{opacity:.85; margin-top:4px}
+.next-when{font-size:1.25rem; font-weight:700; text-align:right}
+.next-when small{display:block; font-weight:500; font-size:.85rem; opacity:.8}
+.next .btn{background:rgb(255 255 255 / .14); border-color:rgb(255 255 255 / .22); color:inherit}
+.next .alert{background:rgb(255 255 255 / .14); color:inherit}
+
+/* stat strip */
+.stats{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px}
+.stat{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:12px; display:flex; flex-direction:column; gap:2px; text-align:left; min-width:0}
+button.stat{cursor:pointer}
+.stat b{font-size:1.4rem; font-variant-numeric:tabular-nums; line-height:1.15}
+.stat span{color:var(--muted); font-size:.8rem; line-height:1.2}
+.stat.attn{border-color:var(--warn); background:var(--warn-soft)}
+.stat.attn b{color:var(--warn)}
+
+.quick{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px}
+.quick button{display:flex; flex-direction:column; align-items:center; gap:6px; padding:14px 6px; border-radius:var(--r); border:1px solid var(--line); background:var(--surface); font-weight:600; font-size:.88rem}
+.quick svg{width:24px; height:24px; color:var(--plum)}
+
+/* appointment rows */
+.list{display:flex; flex-direction:column; background:var(--surface); border:1px solid var(--line); border-radius:var(--r); overflow:hidden}
+.list > * + *{border-top:1px solid var(--line)}
+.appt{display:grid; grid-template-columns:64px 1fr auto; gap:12px; align-items:center; width:100%; padding:12px 14px; background:none; border:0; text-align:left}
+.appt:hover{background:var(--surface-2)}
+.appt-time{font-variant-numeric:tabular-nums; line-height:1.1}
+.appt-time b{display:block; font-size:1.05rem}
+.appt-time span{font-size:.75rem; color:var(--muted)}
+.appt-main{min-width:0}
+.appt-name{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.appt-svc{color:var(--muted); font-size:.88rem}
+.appt-svc .dot{margin-right:6px; vertical-align:1px}
+.appt-flag{margin-top:4px}
+.appt-end{display:flex; flex-direction:column; align-items:flex-end; gap:4px}
+.price{font-variant-numeric:tabular-nums; font-weight:600; font-size:.92rem}
+.appt.is-done .appt-name, .appt.is-cancelled .appt-name, .appt.is-noshow .appt-name{color:var(--muted)}
+.appt.is-cancelled .appt-name{text-decoration:line-through}
+.dot{width:9px; height:9px; border-radius:50%; display:inline-block; flex:none}
+.cat-cut{background:var(--cat-cut)} .cat-color{background:var(--cat-color)} .cat-style{background:var(--cat-style)} .cat-consult{background:var(--cat-consult)}
+
+.pill{display:inline-flex; align-items:center; gap:5px; font-size:.72rem; font-weight:700; letter-spacing:.03em; padding:3px 9px; border-radius:999px; white-space:nowrap; background:var(--surface-2); color:var(--muted)}
+.pill::before{content:""; width:6px; height:6px; border-radius:50%; background:currentColor}
+.s-booked{background:var(--surface-2); color:var(--muted)}
+.s-confirmed{background:var(--plum-soft); color:var(--plum)}
+.s-done{background:var(--good-soft); color:var(--good)}
+.s-noshow,.s-cancelled{background:var(--bad-soft); color:var(--bad)}
+.s-callback{background:var(--warn-soft); color:var(--warn)}
+.s-booked-call{background:var(--good-soft); color:var(--good)}
+
+.gap{display:flex; align-items:center; gap:10px; width:100%; padding:10px 14px; background:repeating-linear-gradient(135deg, transparent 0 8px, var(--surface-2) 8px 9px); border:0; color:var(--muted); font-size:.88rem; text-align:left}
+.gap b{color:var(--plum); font-weight:600}
+.gap .plus{margin-left:auto; color:var(--plum); font-weight:700}
+
+/* schedule */
+.week-head{display:flex; align-items:center; justify-content:space-between; gap:8px}
+.week-head h1{font-size:2rem}
+.icon-btn{width:44px; height:44px; border-radius:50%; border:1px solid var(--line); background:var(--surface); display:inline-grid; place-items:center}
+.icon-btn svg{width:20px; height:20px}
+.week{display:grid; grid-template-columns:repeat(7, 1fr); gap:4px}
+.wday{display:flex; flex-direction:column; align-items:center; gap:2px; padding:8px 0 6px; border-radius:14px; border:1px solid transparent; background:none; min-width:0}
+.wday small{font-size:.7rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted)}
+.wday b{font-size:1.15rem; font-variant-numeric:tabular-nums}
+.wday i{height:6px; display:flex; gap:2px}
+.wday i span{width:5px; height:5px; border-radius:50%; background:var(--plum); opacity:.7}
+.wday.closed b{color:var(--muted)}
+.wday.today b{color:var(--plum)}
+.wday.sel{background:var(--plum); border-color:var(--plum)}
+.wday.sel small, .wday.sel b{color:var(--plum-ink)}
+.wday.sel i span{background:var(--plum-ink)}
+.day-sum{display:flex; justify-content:space-between; gap:12px; color:var(--muted); font-size:.9rem; flex-wrap:wrap}
+
+/* chart */
+.chart{background:var(--surface); border:1px solid var(--line); border-radius:var(--r); padding:14px 14px 10px; display:flex; flex-direction:column; gap:10px}
+.chart-read{font-size:.92rem; color:var(--muted); min-height:1.4em}
+.chart-read b{color:var(--ink); font-variant-numeric:tabular-nums}
+.plot{position:relative; height:132px; display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; align-items:end; padding-left:40px}
+.grid-line{position:absolute; left:40px; right:0; border-top:1px dashed var(--line)}
+.grid-line span{position:absolute; left:-40px; top:-.6em; font-size:.7rem; color:var(--muted); font-variant-numeric:tabular-nums}
+.bar-col{position:relative; height:100%; display:flex; flex-direction:column; justify-content:flex-end; align-items:center; background:none; border:0; padding:0; border-radius:6px}
+.bar{width:min(70%, 34px); background:var(--plum); opacity:.45; border-radius:4px 4px 0 0; min-height:0}
+.bar-col.end .bar{opacity:1}
+.bar-col:hover .bar, .bar-col:focus-visible .bar{opacity:1}
+.bar-x{display:grid; grid-template-columns:repeat(7, 1fr); gap:6px; padding-left:40px; font-size:.72rem; color:var(--muted); text-align:center; font-weight:600}
+.bar-x .end{color:var(--ink)}
+.baseline{border-top:1px solid var(--muted); margin-left:40px; opacity:.5}
+
+/* people rows */
+.row{display:flex; align-items:center; gap:12px; width:100%; padding:12px 14px; background:none; border:0; text-align:left; color:var(--ink)}
+.row:hover{background:var(--surface-2)}
+.avatar{width:40px; height:40px; border-radius:50%; flex:none; display:grid; place-items:center; font-weight:700; font-size:.9rem; background:var(--plum-soft); color:var(--plum)}
+.row-main{flex:1; min-width:0}
+.row-title{font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.row-sub{color:var(--muted); font-size:.86rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.row-actions{display:flex; gap:6px; flex:none}
+.call-item{display:flex; flex-direction:column; gap:10px; padding:14px}
+.call-top{display:flex; gap:12px; align-items:flex-start}
+.call-reason{margin:0; font-size:.95rem; overflow-wrap:anywhere}
+.search{width:100%; min-height:48px; padding:0 16px; border-radius:999px; border:1px solid var(--line); background:var(--surface)}
+
+.alert{display:flex; gap:8px; align-items:flex-start; padding:10px 12px; border-radius:12px; background:var(--warn-soft); color:var(--warn); font-size:.9rem; font-weight:500}
+.alert.bad{background:var(--bad-soft); color:var(--bad)}
+.alert svg{width:18px; height:18px; flex:none; margin-top:1px}
+.sample-note{font-size:.85rem; color:var(--muted); background:var(--surface-2); border-radius:12px; padding:10px 12px; display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap}
+
+/* tab bar */
+.tabs{position:fixed; left:0; right:0; bottom:0; z-index:10; background:var(--surface); border-top:1px solid var(--line); padding:6px 8px calc(6px + env(safe-area-inset-bottom, 0px))}
+.tabs-in{max-width:760px; margin:0 auto; display:grid; grid-template-columns:repeat(5, 1fr)}
+.tab{display:flex; flex-direction:column; align-items:center; gap:3px; padding:6px 0; background:none; border:0; color:var(--muted); font-size:.72rem; font-weight:600; position:relative}
+.tab svg{width:24px; height:24px}
+.tab[aria-current="page"]{color:var(--plum)}
+.tab .badge{position:absolute; top:2px; left:calc(50% + 6px); min-width:18px; height:18px; border-radius:9px; background:var(--bad); color:#fff; font-size:.68rem; display:grid; place-items:center; padding:0 5px}
+.fab{position:fixed; z-index:11; right:max(16px, calc(50% - 364px)); bottom:calc(84px + env(safe-area-inset-bottom, 0px)); height:56px; padding:0 22px 0 18px; border-radius:28px; border:0; background:var(--plum); color:var(--plum-ink); font-weight:700; display:flex; align-items:center; gap:8px; box-shadow:0 8px 24px rgb(107 45 92 / .35)}
+.fab svg{width:22px; height:22px}
+
+/* sheets */
+dialog.sheet{border:0; padding:0; background:var(--surface); color:var(--ink); width:100%; max-width:640px; max-height:92dvh; margin:auto auto 0; border-radius:22px 22px 0 0; box-shadow:0 -10px 40px rgb(0 0 0 / .2)}
+@media (min-width:700px){ dialog.sheet{margin:auto; border-radius:22px; max-height:88dvh} }
+dialog::backdrop{background:rgb(25 17 23 / .45)}
+.sheet-in{padding:18px 18px calc(22px + env(safe-area-inset-bottom, 0px)); display:flex; flex-direction:column; gap:16px}
+.sheet-head{display:flex; align-items:center; justify-content:space-between; gap:10px}
+.sheet-head h2{font-family:var(--display); font-weight:400; font-size:1.75rem; line-height:1.05}
+.form{display:flex; flex-direction:column; gap:14px}
+.field{display:flex; flex-direction:column; gap:6px; min-width:0}
+.field > span{font-size:.82rem; font-weight:700; color:var(--muted)}
+.field input, .field select, .field textarea{width:100%; min-height:48px; padding:10px 14px; border-radius:12px; border:1px solid var(--line); background:var(--bg); font-size:1rem}
+.field textarea{min-height:84px; resize:vertical}
+.field-row{display:grid; grid-template-columns:1fr 1fr; gap:10px}
+.field-row.three{grid-template-columns:1fr 1fr 1fr}
+.hint{font-size:.8rem; color:var(--muted)}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chip{position:relative}
+.chip input{position:absolute; opacity:0; inset:0; width:100%; height:100%; margin:0; cursor:pointer}
+.chip span{display:inline-flex; align-items:center; min-height:40px; padding:0 14px; border-radius:999px; border:1px solid var(--line); background:var(--bg); font-weight:600; font-size:.9rem}
+.chip input:checked + span{background:var(--plum); border-color:var(--plum); color:var(--plum-ink)}
+.chip input:focus-visible + span{outline:3px solid var(--plum); outline-offset:2px}
+.kv{display:grid; grid-template-columns:repeat(3, 1fr); gap:8px}
+.kv div{background:var(--surface-2); border-radius:12px; padding:10px; min-width:0}
+.kv b{display:block; font-variant-numeric:tabular-nums}
+.kv span{font-size:.78rem; color:var(--muted)}
+.formula{background:var(--copper-soft); border-radius:12px; padding:12px; display:flex; flex-direction:column; gap:4px}
+.formula-top{display:flex; justify-content:space-between; gap:10px; font-size:.82rem; color:var(--copper); font-weight:700}
+.formula pre{margin:0; font:500 .95rem/1.45 ui-monospace, "SF Mono", Menlo, Consolas, monospace; white-space:pre-wrap; overflow-wrap:anywhere; color:var(--ink)}
+.formula p{margin:0; font-size:.88rem; color:var(--muted)}
+.phone-line{font-variant-numeric:tabular-nums; user-select:all; font-weight:600}
+.settings-list .row{min-height:56px}
+.tpl-help{font-size:.8rem; color:var(--muted)}
+.tpl-help code{background:var(--surface-2); padding:1px 5px; border-radius:5px}
+
+#toast{position:fixed; left:50%; bottom:calc(150px + env(safe-area-inset-bottom, 0px)); transform:translateX(-50%) translateY(10px); z-index:50; background:var(--ink); color:var(--bg); padding:12px 18px; border-radius:999px; font-weight:600; font-size:.92rem; opacity:0; pointer-events:none; transition:opacity .2s, transform .2s; max-width:calc(100% - 32px); text-align:center}
+#toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+
+@media (max-width:380px){
+  .stats{grid-template-columns:1fr 1fr 1fr; gap:6px}
+  .stat b{font-size:1.2rem}
+  .appt{grid-template-columns:54px 1fr auto; gap:10px; padding:12px}
+  .field-row.three{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="brand" id="brand">Debbie's <em>Chair</em></div>
+    <div class="top-date" id="topDate"></div>
+  </header>
+  <main id="view" class="view" aria-live="polite"></main>
+</div>
+
+<button class="fab" id="fab" type="button"></button>
+
+<nav class="tabs" aria-label="Main">
+  <div class="tabs-in">
+    <button class="tab" data-tab="today" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Today</button>
+    <button class="tab" data-tab="schedule" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Schedule</button>
+    <button class="tab" data-tab="calls" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>Calls<span class="badge" id="callBadge" hidden></span></button>
+    <button class="tab" data-tab="clients" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></svg>Clients</button>
+    <button class="tab" data-tab="more" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>Settings</button>
+  </div>
+</nav>
+
+<dialog class="sheet" id="sheet"><div class="sheet-in" id="sheetIn"></div></dialog>
+<dialog class="sheet" id="askDlg">
+  <form method="dialog" class="sheet-in">
+    <h2 id="askMsg" style="font-family:var(--display);font-weight:400;font-size:1.5rem"></h2>
+    <p class="sub" id="askSub"></p>
+    <div class="btn-row fill">
+      <button class="btn" value="cancel">Keep it</button>
+      <button class="btn danger" value="ok" id="askOk">Delete</button>
+    </div>
+  </form>
+</dialog>
+<div id="toast" role="status"></div>
+
+<script>
+/* ---------- tiny helpers ---------- */
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const pad = n => String(n).padStart(2, '0');
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const parseYmd = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const today = () => ymd(new Date());
+const addDays = (s, n) => { const d = parseYmd(s); d.setDate(d.getDate() + n); return ymd(d); };
+const daysBetween = (a, b) => Math.round((parseYmd(b) - parseYmd(a)) / 864e5);
+const toMin = t => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+const fromMin = m => `${pad(Math.floor(m / 60))}:${pad(m % 60)}`;
+const nowMin = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
+const fmtTime = t => { let [h, m] = t.split(':').map(Number); const ap = h >= 12 ? 'PM' : 'AM'; h = h % 12 || 12; return { hm: `${h}:${pad(m)}`, ap, full: `${h}:${pad(m)} ${ap}` }; };
+const fmtDay = (s, o = { weekday: 'long', month: 'long', day: 'numeric' }) => parseYmd(s).toLocaleDateString(undefined, o);
+const fmtShort = s => fmtDay(s, { weekday: 'short', month: 'short', day: 'numeric' });
+const money = n => '$' + Math.round(Number(n) || 0).toLocaleString();
+const digits = p => String(p || '').replace(/\D/g, '');
+const fmtPhone = p => { const d = digits(p).replace(/^1(?=\d{10}$)/, ''); return d.length === 10 ? `(${d.slice(0, 3)}) ${d.slice(3, 6)}-${d.slice(6)}` : (p || ''); };
+const first = name => String(name || '').trim().split(/\s+/)[0] || 'there';
+const initials = name => String(name || '?').trim().split(/\s+/).slice(0, 2).map(w => w[0]).join('').toUpperCase();
+const mins = m => m >= 60 ? `${Math.floor(m / 60)} hr${m % 60 ? ' ' + (m % 60) + ' min' : ''}` : `${m} min`;
+const sum = (arr, k) => arr.reduce((t, x) => t + (Number(x[k]) || 0), 0);
+const ago = ts => { const s = (Date.now() - ts) / 1000; if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + ' min ago'; if (s < 86400) return Math.floor(s / 3600) + ' hr ago'; const d = Math.floor(s / 86400); return d === 1 ? 'yesterday' : d + ' days ago'; };
+const telHref = p => 'tel:' + digits(p);
+const smsHref = (p, body) => 'sms:' + digits(p) + '?&body=' + encodeURIComponent(body);
+const fill = (tpl, v) => tpl.replace(/\{(\w+)\}/g, (m, k) => v[k] ?? m);
+
+const ICON = {
+  phone: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></svg>',
+  text: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 5h16v11H9l-5 4z"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  cal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="5" width="18" height="16" rx="3"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>',
+  person: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3 2 20h20z"/><path d="M12 10v4M12 17h.01"/></svg>',
+  left: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m15 5-7 7 7 7"/></svg>',
+  right: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m9 5 7 7-7 7"/></svg>',
+  close: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+};
+
+/* ---------- data ---------- */
+const KEY = 'debbies-chair-v1';
+const STATUS = { booked: 'Booked', confirmed: 'Confirmed', done: 'Done', noshow: 'No-show', cancelled: 'Cancelled' };
+const OUTCOME = { callback: 'Call back', booked: 'Booked', answered: 'Answered', voicemail: 'Left voicemail' };
+const DOW = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+const DEFAULT_TEMPLATES = {
+  confirm: "Hi {first}! You're booked for {service} on {day} at {time}. Can't wait to see you! – {owner}",
+  reminder: "Hi {first}, friendly reminder of your {service} with {owner} on {day} at {time}. Reply YES to confirm or call if you need to change it.",
+  callback: "Hi {first}, it's {owner} returning your call. When's a good time to talk?",
+  due: "Hi {first}! It's been about {weeks} weeks since your last visit. Ready for a refresh? I have openings this week. – {owner}",
+};
+let S;
+let memoryOnly = false;
+
+function seed() {
+  const services = [
+    ['Cut & Style', 60, 65, 'cut'], ["Men's Cut", 30, 30, 'cut'], ['Blowout', 45, 45, 'style'],
+    ['All-Over Color', 90, 95, 'color'], ['Root Touch-Up', 75, 80, 'color'], ['Partial Highlights', 120, 125, 'color'],
+    ['Full Highlights', 150, 160, 'color'], ['Balayage', 180, 220, 'color'], ['Gloss / Toner', 45, 50, 'color'],
+    ['Color Correction', 240, 300, 'color'], ['Consultation', 30, 0, 'consult'],
+  ].map(([name, mins, price, cat]) => ({ id: uid(), name, mins, price, cat }));
+  const svc = n => services.find(s => s.name === n);
+  const mk = (name, phone, extra = {}) => ({ id: uid(), name, phone, email: '', notes: '', allergies: '', patchTest: '', formulas: [], created: Date.now(), sample: true, ...extra });
+  const t = today();
+  const clients = [
+    mk('Karen Whitfield', '9015550101', { notes: 'Likes it a little shorter than she asks. Coffee, cream only.', formulas: [{ id: uid(), date: addDays(t, -35), formula: 'Roots: 6N + 6G (1:1), 20 vol, 35 min\nEnds: 8V gloss, 10 vol, 15 min', result: 'Warm, even. Keep the gloss.' }] }),
+    mk('Lisa Tran', '9015550102', { formulas: [{ id: uid(), date: addDays(t, -42), formula: 'Foils: lightener + 20 vol, 40 min\nToner: 9V + 9P (2:1), 10 vol, 20 min', result: 'Bright, no yellow. Book 8 weeks.' }] }),
+    mk('Marjorie Boyd', '9015550103', { allergies: 'Sensitive scalp. Patch test before any new color.', patchTest: addDays(t, -200) }),
+    mk('Angela Price', '9015550104', { notes: 'Brings her daughter sometimes.' }),
+    mk('Tasha Greene', '9015550105'),
+    mk('Jenny Alvarez', '9015550106'),
+    mk('Rhonda Mills', '9015550107', { notes: 'Gray coverage every 6 weeks.', formulas: [{ id: uid(), date: addDays(t, -58), formula: '5N + 5A (1:1), 20 vol, 45 min', result: 'Full coverage at temples.' }] }),
+    mk('Beth Ann Carter', '9015550108'),
+  ];
+  const appts = [];
+  const add = (c, s, date, time, status) => appts.push({ id: uid(), clientId: c.id, serviceId: s.id, date, time, mins: s.mins, price: s.price, status, notes: '', sample: true });
+  const open = [2, 3, 4, 5, 6];
+  // today, shown even on a closed day so the demo is never empty
+  add(clients[0], svc('Cut & Style'), t, '09:00', 'confirmed');
+  add(clients[2], svc('Root Touch-Up'), t, '10:30', 'confirmed');
+  add(clients[1], svc('Balayage'), t, '12:30', 'confirmed');
+  add(clients[3], svc('Blowout'), t, '15:45', 'booked');
+  add(clients[4], svc("Men's Cut"), t, '16:45', 'booked');
+  // past two weeks
+  const rot = ['Cut & Style', 'All-Over Color', 'Partial Highlights', 'Gloss / Toner', 'Root Touch-Up', 'Blowout', 'Full Highlights'];
+  let k = 0;
+  for (let i = -13; i <= -1; i++) {
+    const d = addDays(t, i);
+    if (!open.includes(parseYmd(d).getDay())) continue;
+    ['09:30', '11:30', '14:00'].slice(0, 2 + (k % 2)).forEach(time => { add(clients[k % 6], svc(rot[k % rot.length]), d, time, k % 11 === 5 ? 'noshow' : 'done'); k++; });
+  }
+  // next week
+  for (let i = 1; i <= 7; i++) {
+    const d = addDays(t, i);
+    if (!open.includes(parseYmd(d).getDay())) continue;
+    ['10:00', '13:00', '15:30'].slice(0, 1 + (k % 3)).forEach(time => { add(clients[k % 6], svc(rot[k % rot.length]), d, time, 'booked'); k++; });
+  }
+  // the overdue regulars
+  add(clients[6], svc('Root Touch-Up'), addDays(t, -58), '10:00', 'done');
+  add(clients[7], svc('Cut & Style'), addDays(t, -49), '11:00', 'done');
+  const calls = [
+    { id: uid(), ts: Date.now() - 40 * 60e3, name: 'Pam Riley', phone: '9015550150', clientId: '', reason: 'New client. Asking about balayage price and next opening.', outcome: 'callback', done: false, sample: true },
+    { id: uid(), ts: Date.now() - 3 * 3600e3, name: 'Angela Price', phone: '9015550104', clientId: clients[3].id, reason: 'Wants to move Saturday to a weekday if possible.', outcome: 'callback', done: false, sample: true },
+    { id: uid(), ts: Date.now() - 26 * 3600e3, name: 'Lisa Tran', phone: '9015550102', clientId: clients[1].id, reason: 'Booked balayage.', outcome: 'booked', done: true, sample: true },
+  ];
+  return { v: 1, settings: { business: "Debbie's Chair", owner: 'Debbie', open: '09:00', close: '18:00', days: open, templates: { ...DEFAULT_TEMPLATES }, theme: 'system', hasSample: true }, services, clients, appts, calls };
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem(KEY);
+    if (raw) { S = JSON.parse(raw); S.settings.templates = { ...DEFAULT_TEMPLATES, ...S.settings.templates }; return; }
+  } catch (e) { memoryOnly = true; }
+  S = seed(); save();
+}
+function save() {
+  try { localStorage.setItem(KEY, JSON.stringify(S)); }
+  catch (e) { if (!memoryOnly) { memoryOnly = true; toast("This browser won't let the app save. Changes last until you close it."); } }
+}
+
+const client = id => S.clients.find(c => c.id === id);
+const service = id => S.services.find(s => s.id === id);
+const active = a => a.status !== 'cancelled' && a.status !== 'noshow';
+const dayAppts = d => S.appts.filter(a => a.date === d).sort((a, b) => toMin(a.time) - toMin(b.time));
+const clientAppts = id => S.appts.filter(a => a.clientId === id).sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+const openCallbacks = () => S.calls.filter(c => c.outcome === 'callback' && !c.done).sort((a, b) => a.ts - b.ts);
+const findClientByName = n => S.clients.find(c => c.name.trim().toLowerCase() === String(n).trim().toLowerCase());
+const findClientByPhone = p => { const d = digits(p).slice(-10); return d.length === 10 ? S.clients.find(c => digits(c.phone).slice(-10) === d) : null; };
+const isOpenDay = d => S.settings.days.includes(parseYmd(d).getDay());
+const lastVisit = id => clientAppts(id).find(a => a.status === 'done' && a.date <= today());
+const nextVisit = id => clientAppts(id).filter(a => active(a) && a.date >= today() && a.status !== 'done').pop();
+const tplVars = (a, c) => ({ first: first(c?.name), owner: S.settings.owner, service: service(a?.serviceId)?.name || 'appointment', day: a ? fmtDay(a.date, { weekday: 'long', month: 'short', day: 'numeric' }) : '', time: a ? fmtTime(a.time).full : '' });
+
+function dueClients() {
+  const t = today();
+  return S.clients.map(c => ({ c, last: lastVisit(c.id) }))
+    .filter(x => x.last && daysBetween(x.last.date, t) >= 42 && !nextVisit(x.c.id))
+    .sort((a, b) => a.last.date.localeCompare(b.last.date));
+}
+
+function openSlots(d) {
+  if (!isOpenDay(d)) return [];
+  const start = toMin(S.settings.open), end = toMin(S.settings.close);
+  let cur = start;
+  if (d === today()) cur = Math.max(start, Math.ceil(nowMin() / 15) * 15);
+  if (d < today()) return [];
+  const slots = [];
+  dayAppts(d).filter(active).forEach(a => {
+    const s = toMin(a.time), e = s + a.mins;
+    if (s - cur >= 30) slots.push([cur, s]);
+    cur = Math.max(cur, e);
+  });
+  if (end - cur >= 30) slots.push([cur, end]);
+  return slots;
+}
+
+/* ---------- ui state ---------- */
+const TABS = ['today', 'schedule', 'calls', 'clients', 'more'];
+const ui = { tab: 'today', day: today(), q: '' };
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast.h); toast.h = setTimeout(() => t.classList.remove('show'), 2600);
+}
+function ask(msg, sub = '', ok = 'Delete') {
+  return new Promise(res => {
+    const d = $('#askDlg'); $('#askMsg').textContent = msg; $('#askSub').textContent = sub; $('#askOk').textContent = ok;
+    d.returnValue = ''; d.showModal();
+    d.addEventListener('close', () => res(d.returnValue === 'ok'), { once: true });
+  });
+}
+function openSheet(title, body, mount) {
+  const dlg = $('#sheet');
+  $('#sheetIn').innerHTML = `<div class="sheet-head"><h2>${esc(title)}</h2><button class="icon-btn" type="button" data-close aria-label="Close">${ICON.close}</button></div>${body}`;
+  if (!dlg.open) dlg.showModal();
+  $('#sheetIn').scrollTop = 0; dlg.scrollTop = 0;
+  mount && mount($('#sheetIn'));
+}
+const closeSheet = () => $('#sheet').open && $('#sheet').close();
+$('#sheet').addEventListener('click', e => { if (e.target.id === 'sheet' || e.target.closest('[data-close]')) closeSheet(); });
+$('#askDlg').addEventListener('click', e => { if (e.target.id === 'askDlg') $('#askDlg').close('cancel'); });
+
+function applyTheme() {
+  const t = S.settings.theme;
+  if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; else delete document.documentElement.dataset.theme;
+}
+
+/* ---------- shared pieces ---------- */
+function apptRow(a, opts = {}) {
+  const c = client(a.clientId), s = service(a.serviceId), t = fmtTime(a.time);
+  return `<button class="appt is-${a.status}" type="button" data-appt="${a.id}">
+    <div class="appt-time"><b>${opts.showDate ? esc(fmtDay(a.date, { month: 'short', day: 'numeric' })) : t.hm}</b><span>${opts.showDate ? t.full : t.ap}</span></div>
+    <div class="appt-main"><div class="appt-name">${esc(c?.name || 'Walk-in')}</div>
+      <div class="appt-svc"><i class="dot cat-${s?.cat || 'consult'}"></i>${esc(s?.name || 'Service')} · ${mins(a.mins)}</div>${c?.allergies ? '<div class="appt-flag"><span class="pill s-callback">Allergy note</span></div>' : ''}</div>
+    <div class="appt-end"><span class="pill s-${a.status}">${STATUS[a.status]}</span><span class="price">${money(a.price)}</span></div>
+  </button>`;
+}
+function gapRow(d, [s, e]) {
+  return `<button class="gap" type="button" data-new-at="${d}|${fromMin(s)}">Open <b>${fmtTime(fromMin(s)).full} – ${fmtTime(fromMin(e)).full}</b> · ${mins(e - s)}<span class="plus">Book</span></button>`;
+}
+function callbackItem(c) {
+  const cl = c.clientId ? client(c.clientId) : null;
+  const body = fill(S.settings.templates.callback, { first: first(c.name), owner: S.settings.owner });
+  return `<div class="call-item">
+    <div class="call-top"><div class="avatar">${esc(initials(c.name))}</div>
+      <div class="row-main"><div class="row-title">${esc(c.name || 'Unknown caller')} ${cl ? '' : '<span class="pill s-confirmed">New</span>'}</div>
+      <div class="row-sub"><span class="phone-line">${esc(fmtPhone(c.phone))}</span> · ${ago(c.ts)}</div></div></div>
+    ${c.reason ? `<p class="call-reason">${esc(c.reason)}</p>` : ''}
+    <div class="btn-row">
+      ${c.phone ? `<a class="btn sm primary" href="${telHref(c.phone)}">${ICON.phone}Call</a><a class="btn sm" href="${smsHref(c.phone, body)}">${ICON.text}Text</a>` : ''}
+      <button class="btn sm soft" type="button" data-book-call="${c.id}">${ICON.cal}Book</button>
+      <button class="btn sm" type="button" data-done-call="${c.id}">Done</button>
+    </div></div>`;
+}
+
+/* ---------- views ---------- */
+function viewToday() {
+  const t = today(), all = dayAppts(t), appts = all.filter(active);
+  const nm = nowMin();
+  const next = appts.find(a => a.status !== 'done' && toMin(a.time) + a.mins > nm);
+  const h = new Date().getHours();
+  const hello = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+  const cbs = openCallbacks();
+  const weekStart = addDays(t, -6);
+  const weekDone = sum(S.appts.filter(a => a.status === 'done' && a.date >= weekStart && a.date <= t), 'price');
+  const due = dueClients();
+  let nextHtml = '';
+  if (next) {
+    const c = client(next.clientId), s = service(next.serviceId), start = toMin(next.time);
+    const until = start - nm;
+    const when = until > 0 ? (until < 60 ? `in ${until} min` : `in ${mins(Math.round(until / 15) * 15)}`) : 'in the chair now';
+    nextHtml = `<section class="next" aria-label="Next client">
+      <p class="eyebrow">${until > 0 ? 'Next up' : 'With you now'}</p>
+      <div class="next-main"><div><div class="next-name">${esc(c?.name || 'Walk-in')}</div><div class="next-meta">${esc(s?.name || '')} · ${mins(next.mins)} · ${money(next.price)}</div></div>
+        <div class="next-when num">${fmtTime(next.time).full}<small>${when}</small></div></div>
+      ${c?.allergies ? `<div class="alert">${ICON.warn}<span>${esc(c.allergies)}</span></div>` : ''}
+      <div class="btn-row">${c?.phone ? `<a class="btn sm" href="${smsHref(c.phone, fill(S.settings.templates.reminder, tplVars(next, c)))}">${ICON.text}Text</a><a class="btn sm" href="${telHref(c.phone)}">${ICON.phone}Call</a>` : ''}
+        <button class="btn sm" type="button" data-client="${c?.id || ''}">${ICON.person}Formula &amp; notes</button></div>
+    </section>`;
+  }
+  return `
+    <section class="section">
+      <p class="eyebrow">${esc(fmtDay(t))}</p>
+      <h1>${hello}, ${esc(S.settings.owner)}</h1>
+      <p class="sub">${appts.length ? `${appts.length} ${appts.length === 1 ? 'client' : 'clients'} today · ${money(sum(appts, 'price'))} on the books` : isOpenDay(t) ? 'Nothing booked yet today.' : 'The salon is closed today. Enjoy it.'}</p>
+    </section>
+    ${S.settings.hasSample ? `<div class="sample-note"><span>You're looking at sample clients so you can try things out.</span><button class="link" type="button" data-go="more">Clear samples</button></div>` : ''}
+    ${nextHtml}
+    <div class="stats">
+      <button class="stat" type="button" data-go="schedule"><b>${appts.length}</b><span>Clients today</span></button>
+      <button class="stat ${cbs.length ? 'attn' : ''}" type="button" data-go="calls"><b>${cbs.length}</b><span>Calls to return</span></button>
+      <div class="stat"><b>${money(weekDone)}</b><span>Earned last 7 days</span></div>
+    </div>
+    <div class="quick">
+      <button type="button" data-action="book">${ICON.cal}Book</button>
+      <button type="button" data-action="log-call">${ICON.phone}Log a call</button>
+      <button type="button" data-action="new-client">${ICON.person}New client</button>
+    </div>
+    <section class="section">
+      <div class="section-head"><h2>Today's chair</h2><button class="link" type="button" data-go="schedule">Full schedule</button></div>
+      ${all.length ? `<div class="list">${dayWithGaps(t)}</div>` : `<div class="empty">No appointments today.${isOpenDay(t) ? ' Tap Book to add one.' : ''}</div>`}
+    </section>
+    ${cbs.length ? `<section class="section"><div class="section-head"><h2>Calls to return</h2><button class="link" type="button" data-go="calls">All calls</button></div><div class="list">${cbs.slice(0, 3).map(callbackItem).join('')}</div></section>` : ''}
+    <section class="section"><h2>Money in</h2>${weekChart()}</section>
+    ${due.length ? `<section class="section"><div class="section-head"><h2>Due for a visit</h2><span class="hint">6+ weeks, nothing booked</span></div><div class="list">${due.slice(0, 5).map(dueRow).join('')}</div></section>` : ''}
+  `;
+}
+function dueRow({ c, last }) {
+  const weeks = Math.floor(daysBetween(last.date, today()) / 7);
+  const body = fill(S.settings.templates.due, { first: first(c.name), owner: S.settings.owner, weeks });
+  return `<div class="row"><div class="avatar">${esc(initials(c.name))}</div>
+    <button class="row-main" type="button" data-client="${c.id}" style="background:none;border:0;padding:0;text-align:left"><div class="row-title">${esc(c.name)}</div><div class="row-sub">${weeks} weeks since ${esc(service(last.serviceId)?.name || 'last visit')}</div></button>
+    <div class="row-actions">${c.phone ? `<a class="btn sm soft" href="${smsHref(c.phone, body)}">${ICON.text}Text</a>` : ''}</div></div>`;
+}
+function dayWithGaps(d) {
+  const appts = dayAppts(d), gaps = openSlots(d);
+  const items = [...appts.map(a => ({ at: toMin(a.time), html: apptRow(a) })), ...gaps.map(g => ({ at: g[0] - 0.5, html: gapRow(d, g) }))];
+  return items.sort((a, b) => a.at - b.at).map(i => i.html).join('');
+}
+function weekChart() {
+  const t = today();
+  const days = [...Array(7)].map((_, i) => addDays(t, i - 6));
+  const vals = days.map(d => sum(S.appts.filter(a => a.date === d && a.status === 'done'), 'price'));
+  const total = vals.reduce((a, b) => a + b, 0);
+  const top = Math.max(100, Math.ceil(Math.max(...vals) / 100) * 100);
+  const readDefault = `Last 7 days: <b>${money(total)}</b> from finished appointments`;
+  return `<div class="chart" data-default="${esc(readDefault)}">
+    <div class="chart-read" id="chartRead">${readDefault}</div>
+    <div class="plot">
+      <div class="grid-line" style="top:0"><span>${money(top)}</span></div>
+      <div class="grid-line" style="top:50%"><span>${money(top / 2)}</span></div>
+      ${days.map((d, i) => `<button class="bar-col ${i === 6 ? 'end' : ''}" type="button" data-read="${esc(`${fmtShort(d)}: <b>${money(vals[i])}</b>${vals[i] ? '' : isOpenDay(d) ? '' : ' (closed)'}`)}" aria-label="${esc(fmtShort(d))} ${money(vals[i])}"><span class="bar" style="height:${(vals[i] / top) * 100}%"></span></button>`).join('')}
+    </div>
+    <div class="baseline"></div>
+    <div class="bar-x">${days.map((d, i) => `<span class="${i === 6 ? 'end' : ''}">${i === 6 ? 'Today' : esc(parseYmd(d).toLocaleDateString(undefined, { weekday: 'short' }))}</span>`).join('')}</div>
+  </div>`;
+}
+
+function viewSchedule() {
+  const d = ui.day, sel = parseYmd(d);
+  const sun = addDays(d, -sel.getDay());
+  const days = [...Array(7)].map((_, i) => addDays(sun, i));
+  const appts = dayAppts(d), act = appts.filter(active);
+  const month = parseYmd(sun).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  return `
+    <div class="week-head">
+      <div><p class="eyebrow">${esc(month)}</p><h1>${esc(fmtDay(d, { weekday: 'long', month: 'short', day: 'numeric' }))}</h1></div>
+      <div class="btn-row">
+        <button class="icon-btn" type="button" data-week="-7" aria-label="Previous week">${ICON.left}</button>
+        ${d !== today() ? `<button class="btn sm" type="button" data-day="${today()}">Today</button>` : ''}
+        <button class="icon-btn" type="button" data-week="7" aria-label="Next week">${ICON.right}</button>
+      </div>
+    </div>
+    <div class="week" role="tablist" aria-label="Pick a day">
+      ${days.map(x => { const n = dayAppts(x).filter(active).length; return `<button type="button" role="tab" aria-selected="${x === d}" class="wday ${x === d ? 'sel' : ''} ${x === today() ? 'today' : ''} ${isOpenDay(x) ? '' : 'closed'}" data-day="${x}"><small>${esc(parseYmd(x).toLocaleDateString(undefined, { weekday: 'short' }))}</small><b>${parseYmd(x).getDate()}</b><i>${'<span></span>'.repeat(Math.min(n, 4))}</i></button>`; }).join('')}
+    </div>
+    <div class="day-sum"><span>${isOpenDay(d) ? `Open ${fmtTime(S.settings.open).full} – ${fmtTime(S.settings.close).full}` : `Closed on ${DOW[sel.getDay()]}s`}</span><span class="num">${act.length} booked · ${money(sum(act, 'price'))}</span></div>
+    ${appts.length || openSlots(d).length ? `<div class="list">${dayWithGaps(d)}</div>` : `<div class="empty">${isOpenDay(d) ? 'Nothing booked.' : 'Closed this day.'} <button class="link" type="button" data-new-at="${d}|${S.settings.open}">Book anyway</button></div>`}
+  `;
+}
+
+function viewCalls() {
+  const cbs = openCallbacks();
+  const recent = S.calls.filter(c => !(c.outcome === 'callback' && !c.done)).sort((a, b) => b.ts - a.ts).slice(0, 30);
+  return `
+    <section class="section"><p class="eyebrow">Phone</p><h1>Calls</h1>
+      <p class="sub">When the phone rings, tap <b>Log a call</b> and jot down who it was and what they need. Anyone marked "Call back" stays here until you're done.</p></section>
+    <button class="btn primary" type="button" data-action="log-call" style="align-self:flex-start">${ICON.plus}Log a call</button>
+    <section class="section"><div class="section-head"><h2>Call back</h2><span class="hint num">${cbs.length} waiting</span></div>
+      ${cbs.length ? `<div class="list">${cbs.map(callbackItem).join('')}</div>` : '<div class="empty">All caught up. Nobody is waiting on a call.</div>'}</section>
+    <section class="section"><h2>Recent</h2>
+      ${recent.length ? `<div class="list">${recent.map(c => `<button class="row" type="button" data-call="${c.id}"><div class="avatar">${esc(initials(c.name))}</div><div class="row-main"><div class="row-title">${esc(c.name || 'Unknown caller')}</div><div class="row-sub">${esc(c.reason || fmtPhone(c.phone))}</div></div><div class="appt-end"><span class="pill ${c.outcome === 'booked' ? 's-booked-call' : 's-booked'}">${OUTCOME[c.outcome]}</span><span class="hint">${ago(c.ts)}</span></div></button>`).join('')}</div>` : '<div class="empty">No calls logged yet.</div>'}</section>
+  `;
+}
+
+function viewClients() {
+  return `
+    <section class="section"><p class="eyebrow num">${S.clients.length} on file</p><h1>Clients</h1></section>
+    <input class="search" id="clientSearch" type="search" placeholder="Search by name or phone" value="${esc(ui.q)}" autocomplete="off" aria-label="Search clients">
+    <div id="clientList">${clientList()}</div>
+  `;
+}
+function clientList() {
+  const q = ui.q.trim().toLowerCase(), qd = digits(q);
+  const list = S.clients.filter(c => !q || c.name.toLowerCase().includes(q) || (qd && digits(c.phone).includes(qd))).sort((a, b) => a.name.localeCompare(b.name));
+  if (!list.length) return `<div class="empty">No one matches "${esc(ui.q)}". <button class="link" type="button" data-action="new-client">Add them</button></div>`;
+  return `<div class="list">${list.map(c => {
+    const l = lastVisit(c.id), n = nextVisit(c.id);
+    const sub = n ? `Next: ${fmtShort(n.date)}` : l ? `Last: ${fmtShort(l.date)}` : fmtPhone(c.phone) || 'No visits yet';
+    return `<button class="row" type="button" data-client="${c.id}"><div class="avatar">${esc(initials(c.name))}</div><div class="row-main"><div class="row-title">${esc(c.name)}</div><div class="row-sub">${esc(sub)}</div></div>${c.allergies ? '<span class="pill s-callback">Allergy</span>' : ''}${c.formulas?.length ? '<span class="pill s-confirmed">Formula</span>' : ''}</button>`;
+  }).join('')}</div>`;
+}
+
+function viewMore() {
+  const st = S.settings;
+  return `
+    <section class="section"><p class="eyebrow">Your business</p><h1>Settings</h1></section>
+    <form class="form section" id="bizForm">
+      <h2>Salon</h2>
+      <div class="field-row"><label class="field"><span>Salon name</span><input id="setBiz" name="business" value="${esc(st.business)}"></label>
+      <label class="field"><span>Your first name</span><input id="setOwner" name="owner" value="${esc(st.owner)}"></label></div>
+      <div class="field-row"><label class="field"><span>Opens</span><input id="setOpen" type="time" name="open" value="${st.open}" step="900"></label>
+      <label class="field"><span>Closes</span><input id="setClose" type="time" name="close" value="${st.close}" step="900"></label></div>
+      <div class="field"><span>Open days</span><div class="chips">${DOW.map((n, i) => `<label class="chip"><input type="checkbox" name="days" value="${i}" ${st.days.includes(i) ? 'checked' : ''}><span>${n.slice(0, 3)}</span></label>`).join('')}</div></div>
+      <div class="field"><span>Look</span><div class="chips">${['system', 'light', 'dark'].map(t => `<label class="chip"><input type="radio" name="theme" value="${t}" ${st.theme === t ? 'checked' : ''}><span>${t === 'system' ? 'Match phone' : t[0].toUpperCase() + t.slice(1)}</span></label>`).join('')}</div></div>
+      <button class="btn primary" type="submit" style="align-self:flex-start">Save salon details</button>
+    </form>
+    <section class="section">
+      <div class="section-head"><h2>Services &amp; prices</h2><button class="link" type="button" data-action="new-service">Add service</button></div>
+      <div class="list settings-list">${S.services.map(s => `<button class="row" type="button" data-service="${s.id}"><i class="dot cat-${s.cat}"></i><div class="row-main"><div class="row-title">${esc(s.name)}</div><div class="row-sub">${mins(s.mins)}</div></div><span class="price">${s.price ? money(s.price) : 'Free'}</span></button>`).join('')}</div>
+    </section>
+    <form class="form section" id="tplForm">
+      <h2>Text messages</h2>
+      <p class="tpl-help">These fill in automatically when you tap Text. Use <code>{first}</code> <code>{service}</code> <code>{day}</code> <code>{time}</code> <code>{owner}</code> <code>{weeks}</code>.</p>
+      ${[['confirm', 'Booking confirmation'], ['reminder', 'Appointment reminder'], ['callback', 'Returning a call'], ['due', 'Due for a visit']].map(([k, l]) => `<label class="field"><span>${l}</span><textarea id="tpl-${k}" name="${k}">${esc(st.templates[k])}</textarea></label>`).join('')}
+      <button class="btn primary" type="submit" style="align-self:flex-start">Save messages</button>
+    </form>
+    <section class="section">
+      <h2>Your data</h2>
+      <p class="sub" style="margin:0">Everything stays on this phone. Nothing is sent anywhere. Save a backup every week or so and keep it somewhere safe, like your email or iCloud Drive.</p>
+      <div class="btn-row"><button class="btn" type="button" data-action="export">Save a backup</button>
+        <label class="btn" for="importFile">Restore a backup</label><input id="importFile" type="file" accept="application/json,.json" hidden></div>
+      ${st.hasSample ? `<button class="btn soft" type="button" data-action="clear-sample" style="align-self:flex-start">Clear sample clients and start fresh</button>` : ''}
+      <button class="btn danger" type="button" data-action="wipe" style="align-self:flex-start">Erase everything</button>
+    </section>
+    <section class="section">
+      <h2>Put it on your home screen</h2>
+      <p class="sub" style="margin:0"><b>iPhone:</b> open this page in Safari, tap the Share button, then <b>Add to Home Screen</b>.<br><b>Android:</b> open it in Chrome, tap the ⋮ menu, then <b>Install app</b>.</p>
+    </section>
+  `;
+}
+
+/* ---------- sheets ---------- */
+function apptSheet(a, preset = {}) {
+  const isNew = !a;
+  const c = a ? client(a.clientId) : preset.clientId ? client(preset.clientId) : null;
+  const svcId = a?.serviceId || preset.serviceId || S.services[0]?.id;
+  const s0 = service(svcId);
+  const day0 = a?.date || preset.date || (ui.tab === 'schedule' ? ui.day : nextOpenDay());
+  const v = {
+    name: c?.name || preset.name || '', phone: c?.phone || preset.phone || '',
+    date: day0,
+    time: a?.time || preset.time || nextFreeTime(day0),
+    mins: a?.mins ?? s0?.mins ?? 60, price: a?.price ?? s0?.price ?? 0, status: a?.status || 'booked', notes: a?.notes || '',
+  };
+  const remindBody = a && c ? fill(S.settings.templates.reminder, tplVars(a, c)) : '';
+  openSheet(isNew ? 'Book an appointment' : 'Appointment', `
+    ${a && c ? `<div class="btn-row">${c.phone ? `<a class="btn sm soft" href="${smsHref(c.phone, remindBody)}">${ICON.text}Text reminder</a><a class="btn sm" href="${telHref(c.phone)}">${ICON.phone}Call</a>` : ''}<button class="btn sm" type="button" data-client="${c.id}">${ICON.person}Client card</button></div>` : ''}
+    ${c?.allergies ? `<div class="alert">${ICON.warn}<span>${esc(c.allergies)}</span></div>` : ''}
+    <form class="form" id="apptForm" novalidate>
+      <label class="field"><span>Client</span><input id="apClient" name="client" list="clientNames" value="${esc(v.name)}" placeholder="Start typing a name" autocomplete="off" required></label>
+      <datalist id="clientNames">${S.clients.map(x => `<option value="${esc(x.name)}"></option>`).join('')}</datalist>
+      <label class="field"><span>Phone</span><input id="apPhone" name="phone" type="tel" inputmode="tel" value="${esc(fmtPhone(v.phone))}" placeholder="(901) 555-0100"></label>
+      <label class="field"><span>Service</span><select id="apService" name="serviceId">${S.services.map(x => `<option value="${x.id}" ${x.id === svcId ? 'selected' : ''}>${esc(x.name)} · ${mins(x.mins)} · ${x.price ? money(x.price) : 'Free'}</option>`).join('')}</select></label>
+      <div class="field-row"><label class="field"><span>Day</span><input id="apDate" name="date" type="date" value="${v.date}" required></label>
+        <label class="field"><span>Time</span><input id="apTime" name="time" type="time" value="${v.time}" step="900" required></label></div>
+      <div class="field-row"><label class="field"><span>Minutes</span><input id="apMins" name="mins" type="number" inputmode="numeric" min="5" step="5" value="${v.mins}"></label>
+        <label class="field"><span>Price ($)</span><input id="apPrice" name="price" type="number" inputmode="decimal" min="0" step="1" value="${v.price}"></label></div>
+      ${isNew ? '' : `<div class="field"><span>Status</span><div class="chips">${Object.entries(STATUS).map(([k, l]) => `<label class="chip"><input type="radio" name="status" value="${k}" ${v.status === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>`}
+      <label class="field"><span>Notes</span><textarea id="apNotes" name="notes" placeholder="Anything to remember for this visit">${esc(v.notes)}</textarea></label>
+      <div id="apWarn"></div>
+      <div class="btn-row fill"><button class="btn primary" type="submit">${isNew ? 'Book it' : 'Save changes'}</button></div>
+      ${isNew ? '' : '<button class="btn danger" type="button" id="apDelete">Delete appointment</button>'}
+    </form>`, root => {
+    const f = $('#apptForm', root);
+    const svcSel = $('#apService', root);
+    svcSel.addEventListener('change', () => { const s = service(svcSel.value); if (s) { f.mins.value = s.mins; f.price.value = s.price; } });
+    $('#apClient', root).addEventListener('change', () => { const m = findClientByName(f.client.value); if (m && m.phone && !f.phone.value) f.phone.value = fmtPhone(m.phone); });
+    ['date', 'time', 'mins'].forEach(n => f[n].addEventListener('change', () => { delete f.dataset.warned; $('#apWarn', root).innerHTML = ''; }));
+    $('#apDelete', root)?.addEventListener('click', async () => {
+      if (await ask('Delete this appointment?', "It won't count toward your totals. If they just aren't coming, mark it Cancelled or No-show instead.")) {
+        S.appts = S.appts.filter(x => x.id !== a.id); save(); closeSheet(); render(); toast('Appointment deleted');
+      }
+    });
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = f.client.value.trim();
+      if (!name) { f.client.focus(); return toast("Add the client's name"); }
+      if (!f.date.value || !f.time.value) return toast('Pick a day and time');
+      const m = Math.max(5, parseInt(f.mins.value, 10) || 60);
+      const start = toMin(f.time.value), end = start + m;
+      const clash = dayAppts(f.date.value).filter(x => active(x) && x.id !== a?.id && toMin(x.time) < end && toMin(x.time) + x.mins > start);
+      const outside = !isOpenDay(f.date.value) || start < toMin(S.settings.open) || end > toMin(S.settings.close);
+      if ((clash.length || outside) && !f.dataset.warned) {
+        f.dataset.warned = '1';
+        $('#apWarn', root).innerHTML = `<div class="alert">${ICON.warn}<span>${clash.length ? `This overlaps ${esc(clash.map(x => `${client(x.clientId)?.name || 'someone'} at ${fmtTime(x.time).full}`).join(', '))}. ` : ''}${outside ? "That's outside your open hours. " : ''}Tap the button again to book it anyway.</span></div>`;
+        return;
+      }
+      let c2 = findClientByName(name);
+      const phone = digits(f.phone.value);
+      if (!c2) { c2 = { id: uid(), name, phone, email: '', notes: '', allergies: '', patchTest: '', formulas: [], created: Date.now() }; S.clients.push(c2); }
+      else if (phone && !c2.phone) c2.phone = phone;
+      const data = { clientId: c2.id, serviceId: f.serviceId.value, date: f.date.value, time: f.time.value, mins: m, price: Math.max(0, Number(f.price.value) || 0), notes: f.notes.value.trim() };
+      let saved;
+      if (isNew) { saved = { id: uid(), status: 'booked', ...data }; S.appts.push(saved); }
+      else { const st = f.querySelector('input[name=status]:checked')?.value || a.status; Object.assign(a, data, { status: st }); saved = a; }
+      if (preset.callId) { const cl = S.calls.find(x => x.id === preset.callId); if (cl) { cl.done = true; cl.outcome = 'booked'; cl.clientId = c2.id; } }
+      save(); ui.day = data.date; render();
+      if (isNew && c2.phone) {
+        const body = fill(S.settings.templates.confirm, tplVars(saved, c2));
+        openSheet('Booked', `<p class="sub" style="margin:0">${esc(c2.name)} · ${esc(fmtDay(saved.date))} at ${fmtTime(saved.time).full}</p>
+          <div class="btn-row fill"><a class="btn primary" href="${smsHref(c2.phone, body)}">${ICON.text}Text a confirmation</a><button class="btn" type="button" data-close>Done</button></div>
+          <p class="hint">Opens your Messages app with the text filled in so you can look it over and send.</p>`);
+      } else { closeSheet(); toast(isNew ? 'Booked' : 'Saved'); }
+    });
+  });
+}
+function nextOpenDay() {
+  for (let i = 0; i < 60; i++) { const d = addDays(today(), i); if (openSlots(d).length) return d; }
+  return today();
+}
+function nextFreeTime(d) {
+  const g = openSlots(d)[0];
+  if (g) return fromMin(g[0]);
+  return S.settings.open;
+}
+
+function clientSheet(c) {
+  const hist = clientAppts(c.id);
+  const done = hist.filter(a => a.status === 'done');
+  const upcoming = hist.filter(a => active(a) && a.status !== 'done' && a.date >= today()).reverse();
+  const l = done[0];
+  const patchOld = c.patchTest && daysBetween(c.patchTest, today()) > 180;
+  openSheet(c.name, `
+    <div class="row" style="padding:0"><div class="avatar" style="width:52px;height:52px;font-size:1.05rem">${esc(initials(c.name))}</div>
+      <div class="row-main"><div class="phone-line">${c.phone ? esc(fmtPhone(c.phone)) : '<span class="hint">No phone saved</span>'}</div>${c.email ? `<div class="row-sub">${esc(c.email)}</div>` : ''}</div></div>
+    <div class="btn-row">${c.phone ? `<a class="btn sm primary" href="${telHref(c.phone)}">${ICON.phone}Call</a><a class="btn sm" href="${smsHref(c.phone, '')}">${ICON.text}Text</a>` : ''}
+      <button class="btn sm soft" type="button" id="cBook">${ICON.cal}Book</button><button class="btn sm" type="button" id="cEdit">Edit</button></div>
+    ${c.allergies ? `<div class="alert bad">${ICON.warn}<span><b>Allergy / sensitivity:</b> ${esc(c.allergies)}</span></div>` : ''}
+    ${patchOld ? `<div class="alert">${ICON.warn}<span>Last patch test was ${esc(fmtShort(c.patchTest))}, over 6 months ago.</span></div>` : ''}
+    <div class="kv"><div><b>${done.length}</b><span>Visits</span></div><div><b>${money(sum(done, 'price'))}</b><span>Spent</span></div><div><b>${l ? esc(fmtDay(l.date, { month: 'short', day: 'numeric' })) : '—'}</b><span>Last visit</span></div></div>
+    ${c.notes ? `<section class="section"><h2>Notes</h2><p style="margin:0;white-space:pre-wrap">${esc(c.notes)}</p></section>` : ''}
+    <section class="section"><div class="section-head"><h2>Color formulas</h2><button class="link" type="button" id="cFormula">Add formula</button></div>
+      ${c.formulas?.length ? [...c.formulas].sort((a, b) => b.date.localeCompare(a.date)).map(fm => `<button type="button" class="formula" data-formula="${fm.id}" style="border:0;text-align:left"><div class="formula-top"><span>${esc(fmtDay(fm.date, { month: 'short', day: 'numeric', year: 'numeric' }))}</span><span>Edit</span></div><pre>${esc(fm.formula)}</pre>${fm.result ? `<p>${esc(fm.result)}</p>` : ''}</button>`).join('') : '<div class="empty">No formulas saved yet.</div>'}</section>
+    ${upcoming.length ? `<section class="section"><h2>Coming up</h2><div class="list">${upcoming.map(a => apptRow(a, { showDate: true })).join('')}</div></section>` : ''}
+    <section class="section"><h2>History</h2>${hist.filter(a => !upcoming.includes(a)).length ? `<div class="list">${hist.filter(a => !upcoming.includes(a)).slice(0, 12).map(a => apptRow(a, { showDate: true })).join('')}</div>` : '<div class="empty">No past visits.</div>'}</section>
+  `, root => {
+    $('#cBook', root).onclick = () => apptSheet(null, { clientId: c.id });
+    $('#cEdit', root).onclick = () => clientEditSheet(c);
+    $('#cFormula', root).onclick = () => formulaSheet(c);
+    $$('[data-formula]', root).forEach(b => b.onclick = () => formulaSheet(c, c.formulas.find(x => x.id === b.dataset.formula)));
+  });
+}
+
+function clientEditSheet(c, preset = {}) {
+  const isNew = !c;
+  const v = c || { name: preset.name || '', phone: preset.phone || '', email: '', notes: '', allergies: '', patchTest: '' };
+  openSheet(isNew ? 'New client' : 'Edit client', `
+    <form class="form" id="clientForm" novalidate>
+      <label class="field"><span>Name</span><input id="clName" name="name" value="${esc(v.name)}" required autocomplete="off"></label>
+      <div class="field-row"><label class="field"><span>Phone</span><input id="clPhone" name="phone" type="tel" inputmode="tel" value="${esc(fmtPhone(v.phone))}"></label>
+        <label class="field"><span>Email</span><input id="clEmail" name="email" type="email" value="${esc(v.email)}"></label></div>
+      <label class="field"><span>Allergies or sensitivities</span><input id="clAllergy" name="allergies" value="${esc(v.allergies)}" placeholder="e.g. PPD, sensitive scalp"></label>
+      <label class="field"><span>Last patch test</span><input id="clPatch" name="patchTest" type="date" value="${esc(v.patchTest)}"></label>
+      <label class="field"><span>Notes</span><textarea id="clNotes" name="notes" placeholder="Preferences, family, what she drinks...">${esc(v.notes)}</textarea></label>
+      <button class="btn primary" type="submit">${isNew ? 'Add client' : 'Save'}</button>
+      ${isNew ? '' : '<button class="btn danger" type="button" id="clDelete">Delete client</button>'}
+    </form>`, root => {
+    const f = $('#clientForm', root);
+    $('#clDelete', root)?.addEventListener('click', async () => {
+      if (await ask(`Delete ${c.name}?`, 'This removes their card, formulas and all of their appointments. It cannot be undone.')) {
+        S.clients = S.clients.filter(x => x.id !== c.id); S.appts = S.appts.filter(a => a.clientId !== c.id);
+        save(); closeSheet(); render(); toast('Client deleted');
+      }
+    });
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = f.name.value.trim();
+      if (!name) { f.name.focus(); return toast('Add a name'); }
+      const dupe = findClientByName(name);
+      if (dupe && dupe.id !== c?.id) return toast(`${dupe.name} is already on file`);
+      const data = { name, phone: digits(f.phone.value), email: f.email.value.trim(), allergies: f.allergies.value.trim(), patchTest: f.patchTest.value, notes: f.notes.value.trim() };
+      let target = c;
+      if (isNew) { target = { id: uid(), formulas: [], created: Date.now(), ...data }; S.clients.push(target); } else Object.assign(c, data);
+      if (preset.callId) { const cl = S.calls.find(x => x.id === preset.callId); if (cl) cl.clientId = target.id; }
+      save(); render(); clientSheet(target); toast(isNew ? 'Client added' : 'Saved');
+    });
+  });
+}
+
+function formulaSheet(c, fm) {
+  openSheet(fm ? 'Edit formula' : 'New formula', `
+    <p class="sub" style="margin:0">${esc(c.name)}</p>
+    <form class="form" id="fmForm" novalidate>
+      <label class="field"><span>Date</span><input id="fmDate" name="date" type="date" value="${esc(fm?.date || today())}"></label>
+      <label class="field"><span>Formula</span><textarea id="fmText" name="formula" rows="4" placeholder="Roots: 6N + 6G (1:1), 20 vol, 35 min&#10;Ends: 8V gloss, 10 vol, 15 min" style="font-family:ui-monospace,Menlo,Consolas,monospace">${esc(fm?.formula || '')}</textarea>
+        <span class="hint">Shade, mix ratio, developer volume, processing time.</span></label>
+      <label class="field"><span>How it turned out</span><input id="fmResult" name="result" value="${esc(fm?.result || '')}" placeholder="e.g. A touch warm, try 6A next time"></label>
+      <button class="btn primary" type="submit">Save formula</button>
+      ${fm ? '<button class="btn danger" type="button" id="fmDelete">Delete formula</button>' : ''}
+      <button class="btn" type="button" id="fmBack">Back to ${esc(first(c.name))}</button>
+    </form>`, root => {
+    const f = $('#fmForm', root);
+    $('#fmBack', root).onclick = () => clientSheet(c);
+    $('#fmDelete', root)?.addEventListener('click', async () => {
+      if (await ask('Delete this formula?')) { c.formulas = c.formulas.filter(x => x.id !== fm.id); save(); clientSheet(c); toast('Formula deleted'); }
+    });
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      if (!f.formula.value.trim()) return toast('Write the formula first');
+      const data = { date: f.date.value || today(), formula: f.formula.value.trim(), result: f.result.value.trim() };
+      c.formulas = c.formulas || [];
+      if (fm) Object.assign(fm, data); else c.formulas.push({ id: uid(), ...data });
+      save(); clientSheet(c); toast('Formula saved');
+    });
+  });
+}
+
+function callSheet(call) {
+  const v = call || { name: '', phone: '', reason: '', outcome: 'callback' };
+  openSheet(call ? 'Call' : 'Log a call', `
+    ${call ? `<p class="sub" style="margin:0">${esc(new Date(call.ts).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }))}</p>` : ''}
+    <form class="form" id="callForm" novalidate>
+      <label class="field"><span>Who called</span><input id="caName" name="name" list="callNames" value="${esc(v.name)}" placeholder="Name" autocomplete="off"></label>
+      <datalist id="callNames">${S.clients.map(x => `<option value="${esc(x.name)}"></option>`).join('')}</datalist>
+      <label class="field"><span>Phone number</span><input id="caPhone" name="phone" type="tel" inputmode="tel" value="${esc(fmtPhone(v.phone))}" placeholder="(901) 555-0100"></label>
+      <label class="field"><span>What they wanted</span><textarea id="caReason" name="reason" placeholder="e.g. Wants highlights before the wedding on the 18th">${esc(v.reason)}</textarea></label>
+      <div class="field"><span>What happens next</span><div class="chips">${Object.entries(OUTCOME).map(([k, l]) => `<label class="chip"><input type="radio" name="outcome" value="${k}" ${v.outcome === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
+      <button class="btn primary" type="submit" id="caSave">Save call</button>
+      ${call ? '<button class="btn danger" type="button" id="caDelete">Delete</button>' : ''}
+    </form>`, root => {
+    const f = $('#callForm', root);
+    const syncLabel = () => { $('#caSave', root).textContent = f.querySelector('input[name=outcome]:checked')?.value === 'booked' ? 'Save and pick a time' : 'Save call'; };
+    $$('input[name=outcome]', root).forEach(r => r.addEventListener('change', syncLabel)); syncLabel();
+    f.name.addEventListener('change', () => { const m = findClientByName(f.name.value); if (m?.phone && !f.phone.value) f.phone.value = fmtPhone(m.phone); });
+    f.phone.addEventListener('change', () => { const m = findClientByPhone(f.phone.value); if (m && !f.name.value) f.name.value = m.name; });
+    $('#caDelete', root)?.addEventListener('click', async () => {
+      if (await ask('Delete this call?')) { S.calls = S.calls.filter(x => x.id !== call.id); save(); closeSheet(); render(); toast('Call deleted'); }
+    });
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = f.name.value.trim(), phone = digits(f.phone.value);
+      if (!name && !phone) return toast('Add a name or a number');
+      const outcome = f.querySelector('input[name=outcome]:checked')?.value || 'callback';
+      const match = findClientByName(name) || findClientByPhone(phone);
+      const data = { name: name || match?.name || '', phone: phone || match?.phone || '', clientId: match?.id || '', reason: f.reason.value.trim(), outcome };
+      let rec = call;
+      if (call) Object.assign(call, data, { done: outcome !== 'callback' }); else { rec = { id: uid(), ts: Date.now(), done: outcome !== 'callback', ...data }; S.calls.push(rec); }
+      save(); render();
+      if (outcome === 'booked') { rec.done = false; rec.outcome = 'callback'; save(); apptSheet(null, { name: data.name, phone: data.phone, clientId: match?.id, callId: rec.id }); }
+      else { closeSheet(); toast(outcome === 'callback' ? 'Added to your call-back list' : 'Call saved'); }
+    });
+  });
+}
+
+function serviceSheet(s) {
+  const v = s || { name: '', mins: 60, price: 0, cat: 'cut' };
+  openSheet(s ? 'Edit service' : 'New service', `
+    <form class="form" id="svcForm" novalidate>
+      <label class="field"><span>Name</span><input id="svName" name="name" value="${esc(v.name)}" required></label>
+      <div class="field-row"><label class="field"><span>Minutes</span><input id="svMins" name="mins" type="number" min="5" step="5" value="${v.mins}"></label>
+        <label class="field"><span>Price ($)</span><input id="svPrice" name="price" type="number" min="0" step="1" value="${v.price}"></label></div>
+      <div class="field"><span>Kind</span><div class="chips">${[['cut', 'Cut'], ['color', 'Color'], ['style', 'Style'], ['consult', 'Consult']].map(([k, l]) => `<label class="chip"><input type="radio" name="cat" value="${k}" ${v.cat === k ? 'checked' : ''}><span>${l}</span></label>`).join('')}</div></div>
+      <button class="btn primary" type="submit">Save service</button>
+      ${s ? '<button class="btn danger" type="button" id="svDelete">Delete service</button>' : ''}
+    </form>`, root => {
+    const f = $('#svcForm', root);
+    $('#svDelete', root)?.addEventListener('click', async () => {
+      if (S.services.length <= 1) return toast('Keep at least one service');
+      if (await ask(`Delete ${s.name}?`, 'Past appointments keep their price but will show "Service" as the name.')) { S.services = S.services.filter(x => x.id !== s.id); save(); closeSheet(); render(); toast('Service deleted'); }
+    });
+    f.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = f.name.value.trim(); if (!name) return toast('Name the service');
+      const data = { name, mins: Math.max(5, parseInt(f.mins.value, 10) || 60), price: Math.max(0, Number(f.price.value) || 0), cat: f.querySelector('input[name=cat]:checked')?.value || 'cut' };
+      if (s) Object.assign(s, data); else S.services.push({ id: uid(), ...data });
+      save(); closeSheet(); render(); toast('Service saved');
+    });
+  });
+}
+
+/* ---------- render + events ---------- */
+function render() {
+  $$('.tab').forEach(t => t.setAttribute('aria-current', t.dataset.tab === ui.tab ? 'page' : 'false'));
+  const v = { today: viewToday, schedule: viewSchedule, calls: viewCalls, clients: viewClients, more: viewMore }[ui.tab];
+  $('#view').innerHTML = v();
+  $('#brand').innerHTML = esc(S.settings.business).replace(/(\S+)$/, '<em>$1</em>');
+  $('#topDate').textContent = new Date().toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+  const n = openCallbacks().length; const b = $('#callBadge'); b.hidden = !n; b.textContent = n;
+  const fab = $('#fab');
+  const fabs = { today: ['book', 'Book'], schedule: ['book', 'Book'], calls: ['log-call', 'Log a call'], clients: ['new-client', 'New client'] };
+  const f = fabs[ui.tab];
+  fab.hidden = !f;
+  if (f) { fab.dataset.action = f[0]; fab.innerHTML = ICON.plus + f[1]; }
+  document.title = S.settings.business;
+  bindView();
+}
+function bindView() {
+  const search = $('#clientSearch');
+  if (search) search.addEventListener('input', () => { ui.q = search.value; $('#clientList').innerHTML = clientList(); });
+  const chart = $('.chart');
+  if (chart) {
+    const read = $('#chartRead');
+    $$('.bar-col', chart).forEach(b => { const show = () => read.innerHTML = b.dataset.read; b.addEventListener('mouseenter', show); b.addEventListener('focus', show); b.addEventListener('click', show); });
+    $('.plot', chart).addEventListener('mouseleave', () => read.innerHTML = chart.dataset.default);
+  }
+  const biz = $('#bizForm');
+  if (biz) biz.addEventListener('submit', e => {
+    e.preventDefault();
+    const days = $$('input[name=days]:checked', biz).map(x => Number(x.value));
+    if (biz.open.value >= biz.close.value) return toast('Closing time has to be after opening time');
+    Object.assign(S.settings, { business: biz.business.value.trim() || "Debbie's Chair", owner: biz.owner.value.trim() || 'Debbie', open: biz.open.value, close: biz.close.value, days, theme: biz.querySelector('input[name=theme]:checked')?.value || 'system' });
+    applyTheme(); save(); render(); toast('Saved');
+  });
+  const tpl = $('#tplForm');
+  if (tpl) tpl.addEventListener('submit', e => {
+    e.preventDefault();
+    Object.keys(DEFAULT_TEMPLATES).forEach(k => { S.settings.templates[k] = tpl[k].value.trim() || DEFAULT_TEMPLATES[k]; });
+    save(); toast('Messages saved');
+  });
+  const imp = $('#importFile');
+  if (imp) imp.addEventListener('change', () => {
+    const file = imp.files[0]; if (!file) return;
+    const r = new FileReader();
+    r.onload = async () => {
+      try {
+        const data = JSON.parse(r.result);
+        if (!data || !Array.isArray(data.clients) || !Array.isArray(data.appts) || !data.settings) throw new Error('shape');
+        if (await ask('Replace everything with this backup?', `It has ${data.clients.length} clients and ${data.appts.length} appointments. What's on this phone now will be replaced.`, 'Restore')) {
+          S = data; S.calls = S.calls || []; S.services = S.services || []; S.settings.templates = { ...DEFAULT_TEMPLATES, ...S.settings.templates };
+          save(); applyTheme(); render(); toast('Backup restored');
+        }
+      } catch (e) { toast("That file isn't a backup from this app"); }
+      imp.value = '';
+    };
+    r.readAsText(file);
+  });
+}
+
+document.addEventListener('click', async e => {
+  const el = e.target.closest('[data-tab],[data-go],[data-action],[data-appt],[data-client],[data-call],[data-service],[data-day],[data-week],[data-new-at],[data-book-call],[data-done-call]');
+  if (!el) return;
+  const d = el.dataset;
+  if (d.tab || d.go) { go(d.tab || d.go); return; }
+  if (d.appt) { const a = S.appts.find(x => x.id === d.appt); if (a) apptSheet(a); return; }
+  if (d.client !== undefined) { const c = client(d.client); if (c) clientSheet(c); return; }
+  if (d.call) { const c = S.calls.find(x => x.id === d.call); if (c) callSheet(c); return; }
+  if (d.service) { serviceSheet(service(d.service)); return; }
+  if (d.day) { ui.day = d.day; render(); return; }
+  if (d.week) { ui.day = addDays(ui.day, Number(d.week)); render(); return; }
+  if (d.newAt) { const [date, time] = d.newAt.split('|'); apptSheet(null, { date, time }); return; }
+  if (d.bookCall) { const c = S.calls.find(x => x.id === d.bookCall); if (c) apptSheet(null, { name: c.name, phone: c.phone, clientId: c.clientId, callId: c.id }); return; }
+  if (d.doneCall) { const c = S.calls.find(x => x.id === d.doneCall); if (c) { c.done = true; c.outcome = 'answered'; save(); render(); toast('Marked done'); } return; }
+  switch (d.action) {
+    case 'book': apptSheet(null, ui.tab === 'schedule' ? { date: ui.day } : {}); break;
+    case 'log-call': callSheet(null); break;
+    case 'new-client': clientEditSheet(null, { name: ui.tab === 'clients' && !/\d/.test(ui.q) ? ui.q.trim() : '' }); break;
+    case 'new-service': serviceSheet(null); break;
+    case 'export': exportData(); break;
+    case 'clear-sample':
+      if (await ask('Clear the sample clients?', 'Removes the made-up clients, appointments and calls. Your services, prices and settings stay.', 'Clear samples')) {
+        const ids = new Set(S.clients.filter(c => c.sample).map(c => c.id));
+        S.clients = S.clients.filter(c => !c.sample); S.appts = S.appts.filter(a => !a.sample && !ids.has(a.clientId)); S.calls = S.calls.filter(c => !c.sample);
+        S.settings.hasSample = false; save(); render(); toast('Samples cleared. All yours now.');
+      }
+      break;
+    case 'wipe':
+      if (await ask('Erase everything?', 'Every client, formula, appointment and call on this phone will be gone. Save a backup first if you might want it.', 'Erase everything')) {
+        const keep = S.settings.theme; S = seed(); S.clients = []; S.appts = []; S.calls = []; S.settings.hasSample = false; S.settings.theme = keep;
+        save(); render(); toast('Everything erased');
+      }
+      break;
+  }
+});
+
+function exportData() {
+  const json = JSON.stringify(S, null, 2);
+  const name = `debbies-chair-backup-${today()}.json`;
+  try {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' }));
+    a.download = name; document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000);
+    toast('Backup saved to Downloads');
+  } catch (e) {
+    navigator.clipboard?.writeText(json).then(() => toast('Backup copied. Paste it into an email to yourself.'), () => toast("Couldn't save the backup here"));
+  }
+}
+
+function go(tab) {
+  if (!TABS.includes(tab)) tab = 'today';
+  if (location.hash.slice(1) !== tab) { try { history.replaceState(null, '', '#' + tab); } catch (e) {} }
+  ui.tab = tab; if (tab === 'schedule' && !ui.day) ui.day = today();
+  render(); window.scrollTo(0, 0);
+}
+window.addEventListener('hashchange', () => go(location.hash.slice(1)));
+
+/* keep "next up" and the clock honest without disturbing an open form */
+setInterval(() => { if (!$('#sheet').open && !$('#askDlg').open && document.activeElement?.id !== 'clientSearch') render(); }, 60e3);
+
+load(); applyTheme();
+go(location.hash.slice(1) || 'today');
+
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
